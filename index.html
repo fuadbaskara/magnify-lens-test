@@ -25,7 +25,9 @@
       padding: 0;
     }
     .zoom-area {
+      background-color: #8f8f8f;
       width: 500px;
+      height: 281.25px;
       margin: 50px auto;
       position: relative;
       cursor: none;
@@ -47,23 +49,91 @@
     }
     .small {
       display: block;
+      width: 500px;
+      height: auto;
     }
   </style>
   <script>
     /* Created by Rohan Hapani */
+    var rotation;
     var currDeg = 0;
     function rotate() {
+      let zoom_width = $(".zoom-area").width();
+      let zoom_height = $(".zoom-area").height();
+      if (currDeg === 270) {
+        currDeg = 0;
+      } else currDeg += 90;
       console.log("terpanggil");
       document.querySelectorAll(
         ".small"
-      )[0].style.transform = `rotate(${currDeg + 90}deg)`;
+      )[0].style.transform = `rotate(${currDeg}deg) scale(${
+        currDeg === 90 || currDeg === 270 ? 0.561 : 1
+      })`;
       document.querySelectorAll(
         ".large"
-      )[0].style.transform = `rotate(${currDeg + 90}deg)`;
-      if (currDeg < 180 || currDeg > -180) {
-        currDeg += 90;
-      } else currDeg = 0;
+      )[0].style.transform = `rotate(${currDeg}deg) scale(${
+        currDeg === 90 || currDeg === 270 ? 0.561 : 1
+      })`;
+      console.log(currDeg, zoom_height);
+      // if (
+      //   currDeg === 90 ||
+      //   currDeg === -90 ||
+      //   currDeg === 270 ||
+      //   currDeg === -270
+      // ) {
+      //   document.querySelectorAll(".small")[0].style.height = "auto";
+      //   document.querySelectorAll(".small")[0].style.width = `${zoom_height}px`;
+      // } else {
+      //   document.querySelectorAll(
+      //     ".small"
+      //   )[0].style.height = `${zoom_height}px`;
+      //   document.querySelectorAll(".small")[0].style.width = "auto";
+      // }
     }
+
+    // var setRotation,
+    //     setScale,
+    //     offsetAngle,
+    //     originalHeight,
+    //     originalFactor;
+    //
+    // setRotation = function (degrees, scale, element) {
+    //     element.style.webkitTransform = 'rotate(' + degrees + 'deg) scale(' + scale + ')';
+    //     element.style.transform = 'rotate(' + degrees + 'deg) scale(' + scale + ')';
+    // };
+    //
+    // getScale = function (degrees) {
+    //
+    //     var radians = degrees * Math.PI / 180,
+    //         sum;
+    //
+    //     if (degrees < 90) {
+    //         sum = radians - offsetAngle;
+    //     } else if (degrees < 180) {
+    //         sum = radians + offsetAngle;
+    //     } else if (degrees < 270) {
+    //         sum = radians - offsetAngle;
+    //     } else {
+    //         sum = radians + offsetAngle;
+    //     }
+    //
+    //     return (originalHeight / Math.cos(sum)) / originalFactor;
+    // };
+    //
+    // return function (inner) {
+    //
+    //     offsetAngle = Math.atan(inner.offsetWidth / inner.offsetHeight);
+    //     originalHeight = inner.offsetHeight;
+    //     originalFactor = Math.sqrt(Math.pow(inner.offsetHeight, 2) + Math.pow(inner.offsetWidth, 2));
+    //
+    //     return {
+    //
+    //         rotate: function (degrees) {
+    //             setRotation (degrees, getScale(degrees), inner);
+    //         }
+    //     }
+    // };
+
     $(document).ready(function() {
       var sub_width = 0;
       var sub_height = 0;
@@ -95,11 +165,15 @@
           sub_height = image_object.height;
         } else {
           var magnify_position = $(this).offset();
-          console.log($(this));
-
-          var mx = e.pageX - magnify_position.left;
+          if (currDeg === 90 || currDeg === -90) {
+            var mx = e.pageY - magnify_position.top;
+            var my = e.pageX - magnify_position.left;
+          } else {
+            var mx = e.pageX - magnify_position.left;
+            var my = e.pageY - magnify_position.top;
+          }
+          console.log("magnify_position: ", $(this));
           console.log("mx: ", e.pageX, magnify_position.left);
-          var my = e.pageY - magnify_position.top;
           console.log("my: ", e.pageY, magnify_position.top);
 
           if (
@@ -113,34 +187,51 @@
             $(".large").fadeOut(100);
           }
           if ($(".large").is(":visible")) {
-            // console.log($(".small"));
-            // console.log(document.querySelectorAll(".small"));
-            // console.log($(".small")[0]);
-            // if (currDeg === -180 || currDeg === 180) {
-            //   mx = img.clientWidth - imgLens.offsetWidth - x;
-            //   my = img.clientHeight - imgLens.offsetHeight - y;
-            // } else if (currDeg === -90 || currDeg === 270) {
-            //   [mx, my] = [my, mx];
-            //   // mx = img.clientWidth - imgLens.offsetWidth - x
-            // } else if (currDeg === -270 || currDeg === 90) {
-            //   [mx, my] = [my, mx];
-            //   // my = img.clientHeight - imgLens.offsetHeight - y
-            // }
-            var rx =
-              Math.round(
-                (mx / $(".small").width()) * sub_width - $(".large").width() / 2
-              ) * -1;
-            var ry =
-              Math.round(
-                (my / $(".small").height()) * sub_height -
-                  $(".large").height() / 2
-              ) * -1;
+            if (currDeg === 90 || currDeg === -90) {
+              var rx =
+                (Math.round(
+                  (my / $(".small").height()) * sub_height - $(".large").height() / 2
+                ) * -1) - (mx / $(".small").width());
+              var ry =
+                (Math.round(
+                  (mx / $(".small").width()) * sub_width -
+                    $(".large").width() / 2
+                ) * -1) - (my / $(".small").height());
+            }
+            else if (currDeg === 180 || currDeg === -180) {
+              var rx =
+                Math.round(
+                  (mx / $(".small").width()) * sub_width - $(".large").width() / 2
+                ) * -1;
+              var ry =
+                Math.round(
+                  (my / $(".small").height()) * sub_height -
+                    $(".large").height() / 2
+                ) * -1;
+            }
+            else {
+              var rx =
+                Math.round(
+                  (mx / $(".small").width()) * sub_width - $(".large").width() / 2
+                ) * -1;
+              var ry =
+                Math.round(
+                  (my / $(".small").height()) * sub_height -
+                    $(".large").height() / 2
+                ) * -1;
+            }
 
-            var bgp = rx + "px " + ry + "px";
+            var bgp = `${rx}px ${ry}px`;
             console.log(bgp);
 
-            var px = mx - $(".large").width() / 2;
-            var py = my - $(".large").height() / 2;
+            // var bgsize = `${$(".small").width() * 0.561}px ${$(".small").height() * 0.561}px`
+            if (currDeg === 90 || currDeg === -90 || currDeg === 270) {
+              var px = my - $(".large").height() / 2;
+              var py = mx - $(".large").width() / 2;
+            } else {
+              var px = mx - $(".large").width() / 2;
+              var py = my - $(".large").height() / 2;
+            }
 
             $(".large").css({ left: px, top: py, backgroundPosition: bgp });
           }
