@@ -8,53 +8,51 @@
   <body>
     <div class="zoom-area">
       <!-- It's container of the magnify glass -->
-      <div class="large"></div>
-      <!-- It's for the small image -->
-      <img
-        class="small"
-        src="https://i.ytimg.com/vi/6lt2JfJdGSY/maxresdefault.jpg"
-        width="500"
-        height="500"
-      />
+      <img class="magnifiedImg" src="https://3.bp.blogspot.com/-uu5s-2BvvgA/ToLadCZShOI/AAAAAAAAALE/_aj4_xuXd3E/s1600/Green+nature+wallpaper+%25283%2529.jpg" />
     </div>
     <button onclick="rotate()">Rotate</button>
   </body>
   <style>
-    * {
+    body{
       margin: 0;
-      padding: 0;
     }
     .zoom-area {
-      background-color: #8f8f8f;
-      width: 500px;
-      height: 281.25px;
+      width: 700px;
       margin: 50px auto;
       position: relative;
-      cursor: none;
     }
-    /* for create magnify glass */
-    .large {
-      z-index: 10;
-      width: 175px;
-      height: 175px;
-      position: absolute;
-      border-radius: 100%;
-
-      /* for box shadow for glass effect */
-      box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.85),
-        0 0 7px 7px rgba(0, 0, 0, 0.25), inset 0 0 40px 2px rgba(0, 0, 0, 0.25);
-
-      /*for hide the glass by default*/
-      display: none;
+    p, h2{
+      font: bold 15px 'Open Sans', sans-serif;
+      color: #222;
+      text-align: center;
     }
-    .small {
+    h2{
+      font-size: 35px;
+      margin: 10px 0;
+    }
+    img{
+      width: 700px;
       display: block;
-      width: 500px;
-      height: auto;
+      margin: auto;
+    }
+    .magnify{
+      border-radius: 50%;
+      border: 2px solid black;
+      position: absolute;
+      z-index: 20;
+      background-repeat: no-repeat;
+      background-color: white;
+      box-shadow: inset 0 0 20px rgba(0,0,0,.5);
+      display: none;
+      cursor: none;
     }
   </style>
   <script>
-    /* Created by Rohan Hapani */
+  /*Size is  set in pixels... supports being written as: '250px' */
+    var magnifierSize = 250;
+
+    /*How many times magnification of image on page.*/
+    var magnification = 2;
     var rotation;
     var currDeg = 0;
     function rotate() {
@@ -63,17 +61,16 @@
       if (currDeg === 270) {
         currDeg = 0;
       } else currDeg += 90;
-      console.log("terpanggil");
       document.querySelectorAll(
-        ".small"
+        ".magnifiedImg"
       )[0].style.transform = `rotate(${currDeg}deg) scale(${
         currDeg === 90 || currDeg === 270 ? 0.561 : 1
       })`;
-      document.querySelectorAll(
-        ".large"
-      )[0].style.transform = `rotate(${currDeg}deg) scale(${
-        currDeg === 90 || currDeg === 270 ? 0.561 : 1
-      })`;
+      // document.querySelectorAll(
+      //   ".large"
+      // )[0].style.transform = `rotate(${currDeg}deg) scale(${
+      //   currDeg === 90 || currDeg === 270 ? 0.561 : 1
+      // })`;
       console.log(currDeg, zoom_height);
       // if (
       //   currDeg === 90 ||
@@ -91,152 +88,75 @@
       // }
     }
 
-    // var setRotation,
-    //     setScale,
-    //     offsetAngle,
-    //     originalHeight,
-    //     originalFactor;
-    //
-    // setRotation = function (degrees, scale, element) {
-    //     element.style.webkitTransform = 'rotate(' + degrees + 'deg) scale(' + scale + ')';
-    //     element.style.transform = 'rotate(' + degrees + 'deg) scale(' + scale + ')';
-    // };
-    //
-    // getScale = function (degrees) {
-    //
-    //     var radians = degrees * Math.PI / 180,
-    //         sum;
-    //
-    //     if (degrees < 90) {
-    //         sum = radians - offsetAngle;
-    //     } else if (degrees < 180) {
-    //         sum = radians + offsetAngle;
-    //     } else if (degrees < 270) {
-    //         sum = radians - offsetAngle;
-    //     } else {
-    //         sum = radians + offsetAngle;
-    //     }
-    //
-    //     return (originalHeight / Math.cos(sum)) / originalFactor;
-    // };
-    //
-    // return function (inner) {
-    //
-    //     offsetAngle = Math.atan(inner.offsetWidth / inner.offsetHeight);
-    //     originalHeight = inner.offsetHeight;
-    //     originalFactor = Math.sqrt(Math.pow(inner.offsetHeight, 2) + Math.pow(inner.offsetWidth, 2));
-    //
-    //     return {
-    //
-    //         rotate: function (degrees) {
-    //             setRotation (degrees, getScale(degrees), inner);
-    //         }
-    //     }
-    // };
+    function magnifier() {
 
-    $(document).ready(function() {
-      var sub_width = 0;
-      var sub_height = 0;
-      $(".large").css(
-        "background",
-        "url('" + $(".small").attr("src") + "') no-repeat"
-      );
+    this.magnifyImg = function(ptr, magnification, magnifierSize) {
+      var $pointer;
+      if (typeof ptr == "string") {
+        $pointer = $(ptr);
+      } else if (typeof ptr == "object") {
+        $pointer = ptr;
+      }
 
-      $(document).mousemove(function(e) {
-        console.log(
-          "mx: ",
-          e.pageX,
-          $(".zoom-area").offset().left,
-          $(".zoom-area").width()
-        );
-        console.log(
-          "my: ",
-          e.pageY,
-          $(".zoom-area").offset().top,
-          $(".zoom-area").height()
-        );
-      });
+      if(!($pointer.is('img'))){
+        alert('Object must be image.');
+        return false;
+      }
 
-      $(".zoom-area").mousemove(function(e) {
-        if (!sub_width && !sub_height) {
-          var image_object = new Image();
-          image_object.src = $(".small").attr("src");
-          sub_width = image_object.width;
-          sub_height = image_object.height;
-        } else {
-          var magnify_position = $(this).offset();
-          if (currDeg === 90 || currDeg === -90) {
-            var mx = e.pageY - magnify_position.top;
-            var my = e.pageX - magnify_position.left;
-          } else {
-            var mx = e.pageX - magnify_position.left;
-            var my = e.pageY - magnify_position.top;
-          }
-          console.log("magnify_position: ", $(this));
-          console.log("mx: ", e.pageX, magnify_position.left);
-          console.log("my: ", e.pageY, magnify_position.top);
+      magnification = +(magnification);
 
-          if (
-            mx < $(this).width() &&
-            my < $(this).height() &&
-            mx > 0 &&
-            my > 0
-          ) {
-            $(".large").fadeIn(100);
-          } else {
-            $(".large").fadeOut(100);
-          }
-          if ($(".large").is(":visible")) {
-            if (currDeg === 90 || currDeg === -90) {
-              var rx =
-                (Math.round(
-                  (my / $(".small").height()) * sub_height - $(".large").height() / 2
-                ) * -1) - (mx / $(".small").width());
-              var ry =
-                (Math.round(
-                  (mx / $(".small").width()) * sub_width -
-                    $(".large").width() / 2
-                ) * -1) - (my / $(".small").height());
-            }
-            else if (currDeg === 180 || currDeg === -180) {
-              var rx =
-                Math.round(
-                  (mx / $(".small").width()) * sub_width - $(".large").width() / 2
-                ) * -1;
-              var ry =
-                Math.round(
-                  (my / $(".small").height()) * sub_height -
-                    $(".large").height() / 2
-                ) * -1;
-            }
-            else {
-              var rx =
-                Math.round(
-                  (mx / $(".small").width()) * sub_width - $(".large").width() / 2
-                ) * -1;
-              var ry =
-                Math.round(
-                  (my / $(".small").height()) * sub_height -
-                    $(".large").height() / 2
-                ) * -1;
-            }
+      $pointer.hover(function() {
+        $(this).css('cursor', 'none');
+        $('.magnify').show();
+        //Setting some variables for later use
+        var width = $(this).width();
+        var height = $(this).height();
+        var src = $(this).attr('src');
+        var imagePos = $(this).offset();
+        var image = $(this);
 
-            var bgp = `${rx}px ${ry}px`;
-            console.log(bgp);
-
-            // var bgsize = `${$(".small").width() * 0.561}px ${$(".small").height() * 0.561}px`
-            if (currDeg === 90 || currDeg === -90 || currDeg === 270) {
-              var px = my - $(".large").height() / 2;
-              var py = mx - $(".large").width() / 2;
-            } else {
-              var px = mx - $(".large").width() / 2;
-              var py = my - $(".large").height() / 2;
-            }
-
-            $(".large").css({ left: px, top: py, backgroundPosition: bgp });
-          }
+        if (magnifierSize == undefined) {
+          magnifierSize = '150px';
         }
+
+        $('.magnify').css({
+          'background-size': width * magnification + 'px ' + height * magnification + "px",
+          'background-image': 'url("' + src + '")',
+          'width': magnifierSize,
+          'height': magnifierSize
+        });
+
+        //Setting a few more...
+        var magnifyOffset = +($('.magnify').width() / 2);
+        var rightSide = +(imagePos.left + $(this).width());
+        var bottomSide = +(imagePos.top + $(this).height());
+
+        $(document).mousemove(function(e) {
+          if (e.pageX < +(imagePos.left - magnifyOffset / 6) || e.pageX > +(rightSide + magnifyOffset / 6) || e.pageY < +(imagePos.top - magnifyOffset / 6) || e.pageY > +(bottomSide + magnifyOffset / 6)) {
+            $('.magnify').hide();
+            $(document).unbind('mousemove');
+          }
+          var backgroundPos = "" - ((e.pageX - imagePos.left) * magnification - magnifyOffset) + "px " + -((e.pageY - imagePos.top) * magnification - magnifyOffset) + "px";
+          $('.magnify').css({
+            'left': e.pageX - magnifyOffset,
+            'top': e.pageY - magnifyOffset,
+            'background-position': backgroundPos
+          });
+        });
+      }, function() {
+
       });
-    });
+    };
+
+    this.init = function() {
+      $('body').prepend('<div class="magnify"></div>');
+    }
+
+    return this.init();
+    }
+
+    var magnify = new magnifier();
+    magnify.magnifyImg('img', magnification, magnifierSize);
+
   </script>
 </html>
